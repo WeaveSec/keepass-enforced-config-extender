@@ -42,13 +42,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="KeePass">
-      <HintPath>..\..\Desktop\KeePass-2.54 - Copy\KeePass.exe</HintPath>
+      <HintPath>..\..\..\Desktop\KeePass-2.54 - Copy\KeePass.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigFile.cs" />
     <Compile Include="KeePassEnforcedConfigExtenderExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

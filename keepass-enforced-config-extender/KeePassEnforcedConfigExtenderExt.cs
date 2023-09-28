@@ -53,7 +53,7 @@ namespace KeePassEnforcedConfigExtender
 
 			sourceDb.KdfParameters = (new Argon2Kdf()).GetDefaultParameters();
 
-			KdfParameters lego = KdfParameters.DeserializeExt(KdfParameters.SerializeExt(sourceDb.KdfParameters));
+			// KdfParameters lego = KdfParameters.DeserializeExt(KdfParameters.SerializeExt(sourceDb.KdfParameters));
 
 			//sourceDb.KdfParameters.GetUInt64(e.Database.KdfParameters.GetInt64(KdfParameters.DeserializeExt(Keys));
 			//sourceDb.KdfParameters.SetUInt64(AesKdf.ParamRounds, 620000);
