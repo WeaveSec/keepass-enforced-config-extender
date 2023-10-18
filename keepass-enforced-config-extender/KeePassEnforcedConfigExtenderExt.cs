@@ -55,11 +55,11 @@ namespace KeePassEnforcedConfigExtender
 		private void OnFileSaving(object sender, FileSavingEventArgs e)
 		{
             PwDatabase sourceDb = e.Database;
-			/*
+			
             MessageService.ShowInfo("Show info of file SAVING: " + "\n" +
                 "Cipher: " + e.Database.KdfParameters.Count + "\n" +
                 "Test: " + e.Database.KdfParameters + "\n" +
-                "KdfUuid: " + e.Database.KdfParameters.KdfUuid + "\n");*/
+                "KdfUuid: " + e.Database.KdfParameters.KdfUuid + "\n");
         }
 		private void OnFileSaved(object sender, FileSavedEventArgs e)
 		{
