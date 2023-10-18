@@ -9,6 +9,7 @@ using KeePass.Plugins;
 using KeePassLib;
 using KeePassLib.Cryptography.KeyDerivation;
 using KeePassLib.Utility;
+using System.Xml;
 // using KeePassLib.Serialization;
 
 namespace KeePassEnforcedConfigExtender
@@ -30,6 +31,9 @@ namespace KeePassEnforcedConfigExtender
 			// Get notification of information when file is created
             m_host.MainWindow.FileCreated += this.OnFileCreated;
 
+            // Get notification of information when file is created
+            m_host.MainWindow.FileSaving += this.OnFileSaving;
+
             return true; // Initialization successful
 		}
 
@@ -44,37 +48,65 @@ namespace KeePassEnforcedConfigExtender
 			m_host.MainWindow.FileSaved -= this.OnFileSaved;
 
             m_host.MainWindow.FileCreated -= this.OnFileCreated;
+
+            m_host.MainWindow.FileSaving -= this.OnFileSaving;
         }
 
+		private void OnFileSaving(object sender, FileSavingEventArgs e)
+		{
+            PwDatabase sourceDb = e.Database;
+			/*
+            MessageService.ShowInfo("Show info of file SAVING: " + "\n" +
+                "Cipher: " + e.Database.KdfParameters.Count + "\n" +
+                "Test: " + e.Database.KdfParameters + "\n" +
+                "KdfUuid: " + e.Database.KdfParameters.KdfUuid + "\n");*/
+        }
 		private void OnFileSaved(object sender, FileSavedEventArgs e)
 		{
+			
+
+
 
             PwDatabase sourceDb = e.Database;
 
-			sourceDb.KdfParameters = (new Argon2Kdf()).GetDefaultParameters();
+			/**
 
-			// KdfParameters lego = KdfParameters.DeserializeExt(KdfParameters.SerializeExt(sourceDb.KdfParameters));
+            MessageService.ShowInfo("Show info of file BEFORE: " + "\n" +
+			    "Cipher: " + e.Database.KdfParameters.Count + "\n" +
+			    "Test: " + e.Database.KdfParameters + "\n" +
+			    "KdfUuid: " + e.Database.KdfParameters.KdfUuid + "\n");
+			*/
+            sourceDb.KdfParameters = (new Argon2Kdf()).GetDefaultParameters();
+			/**
+			//KdfParameters lego = KdfParameters.DeserializeExt(KdfParameters.SerializeExt(sourceDb.KdfParameters));
 
-			//sourceDb.KdfParameters.GetUInt64(e.Database.KdfParameters.GetInt64(KdfParameters.DeserializeExt(Keys));
+			//int testint = sourceDb.KdfParameters.GetUInt64(e.Database.KdfParameters.GetInt64(KdfParameters.DeserializeExt(Keys));
 			//sourceDb.KdfParameters.SetUInt64(AesKdf.ParamRounds, 620000);
+			*/
+			
 			sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamIterations, 15);
             sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamMemory, 20 * 1024 * 1024);
             sourceDb.KdfParameters.SetUInt32(Argon2Kdf.ParamParallelism, 1);
 
+            //XmlReader test = new XmlReader();
 
-            MessageService.ShowInfo("Show info of file: " + "\n" +
+            //XmlNodeList node = test.ReadXmlFile("config.xml");
+			/*
+			MessageService.ShowInfo("Show info of file AFTER: " + "\n" +
 				"Cipher: " + e.Database.KdfParameters.Count + "\n" +
 				"Test: " + e.Database.KdfParameters + "\n" +
-				"KdfUuid: " + e.Database.KdfParameters.KdfUuid + "\n");
-		}
+				"KdfUuid: " + e.Database.KdfParameters.KdfUuid + "\n");*/
+
+			
+        }
 
 		private void OnFileCreated(object sender, FileCreatedEventArgs e)
 		{
 
 			// KdfParameters p = e.Database.KdfParameters;
 
-			MessageService.ShowInfo("Compression: " + e.Database.Compression + "\n" +
-				"Cipher: " + e.Database.KdfParameters.Count);
+			//MessageService.ShowInfo("Compression: " + e.Database.Compression + "\n" +
+			//	"Cipher: " + e.Database.KdfParameters.Count);
 
 		}
 	}

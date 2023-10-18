@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<database>
+		<server>localhost</server>
+		<port>3306</port>
+		<username>root</username>
+		<password>password123</password>
+	</database>
+	<logging>
+		<level>debug</level>
+		<file>/var/log/myapp.log</file>
+	</logging>
+	<security>
+		<ssl>true</ssl>
+		<certificate>/etc/ssl/certs/myapp.crt</certificate>
+	</security>
+</configuration>
