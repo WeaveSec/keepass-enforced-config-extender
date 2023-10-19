@@ -9,8 +9,7 @@ using KeePass.Plugins;
 using KeePassLib;
 using KeePassLib.Cryptography.KeyDerivation;
 using KeePassLib.Utility;
-using KeePass.UI;
-using System.Threading.Tasks;
+using System;
 using System.Windows.Forms;
 using System.Xml;
 // using KeePassLib.Serialization;
@@ -22,10 +21,30 @@ namespace KeePassEnforcedConfigExtender
 		// The plugin remembers its host in this variable
 		private IPluginHost m_host = null;
 
+        private XmlDocument xmlDocument;
+        private XmlDocument LoadXmlDocument()
+        {
+            try
+            {
+                XmlDocument xmlDocument = new XmlDocument();
+
+                xmlDocument.Load("KeePass.extended.config.enforced.xml");
+
+                return xmlDocument;
+            }
+            catch (Exception e)
+            {
+                MessageService.ShowInfo("ERROR: " + e);
+                return null;
+            }
+        }
+
 		public override bool Initialize(IPluginHost host)
 		{
 			if(host == null) return false; // Fail; we need the host
 			m_host = host;
+
+            xmlDocument = LoadXmlDocument();
 
 			// We want a notification when the user tried to save
 			// the current database
@@ -33,6 +52,8 @@ namespace KeePassEnforcedConfigExtender
 
             // Get notification of information when file is created
             m_host.MainWindow.FileSaving += this.OnFileSaving;
+
+
 
             return true; // Initialization successful
 		}
@@ -51,10 +72,27 @@ namespace KeePassEnforcedConfigExtender
 
 		private void OnFileSaving(object sender, FileSavingEventArgs e)
 		{
-            
             PwDatabase sourceDb = e.Database;
+            ulong configArgon2dIterationsMin;
+            ulong configArgon2dMemoryMin;
+            uint configArgon2dParallelismMin;
 
-			bool standardMet = VerifyStandard(sourceDb);
+            string configKdfFunction = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/KdfFunction").InnerText;
+            ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dIterations").InnerText, out configArgon2dIterationsMin);
+            ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dMemory").InnerText, out configArgon2dMemoryMin);
+            uint.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dParallelism").InnerText, out configArgon2dParallelismMin);
+
+            if (configKdfFunction != "Argon2d" || configArgon2dIterationsMin == 0 || configArgon2dMemoryMin == 0 || configArgon2dParallelismMin == 0)
+            {
+                // Kdf data could not be read, using defaults
+                configKdfFunction = "Argon2d";
+                configArgon2dIterationsMin = 15;
+                configArgon2dMemoryMin = 20;
+                configArgon2dParallelismMin = 1;
+            }
+
+
+			bool standardMet = VerifyStandard(sourceDb, configArgon2dIterationsMin, configArgon2dMemoryMin, configArgon2dParallelismMin);
 
 
             // If KDF standard not met, prompts user response
@@ -76,9 +114,9 @@ namespace KeePassEnforcedConfigExtender
                 {
                     sourceDb.KdfParameters = (new Argon2Kdf()).GetDefaultParameters();
 
-                    sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamIterations, 15);
-                    sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamMemory, 20 * 1024 * 1024);
-                    sourceDb.KdfParameters.SetUInt32(Argon2Kdf.ParamParallelism, 1);
+                    sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamIterations, configArgon2dIterationsMin);
+                    sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamMemory, configArgon2dMemoryMin * 1024 * 1024);
+                    sourceDb.KdfParameters.SetUInt32(Argon2Kdf.ParamParallelism, configArgon2dParallelismMin);
                 }
                 // If user does not want to save, set Cancel signal
                 else
@@ -88,7 +126,7 @@ namespace KeePassEnforcedConfigExtender
             }
         }
 
-		private bool VerifyStandard(PwDatabase sourceDb)
+		private bool VerifyStandard(PwDatabase sourceDb, ulong Argon2dIterationsMin, ulong Argon2dMemoryMin, uint Argon2dParallelismMin)
 		{
             bool metStandard = false;
             bool Cancel;
@@ -128,7 +166,7 @@ namespace KeePassEnforcedConfigExtender
             uint Argon2Parallelism = sourceDb.KdfParameters.GetUInt32(ArgonParamParallelism, DefaultParallelism);
 
             // Compare if Database Kdf Settings meets minimum standard
-            if (kdf is Argon2Kdf && Argon2Iterations >= 15 && Argon2Memory >= 20971520 && Argon2Parallelism >= 1)
+            if (kdf is Argon2Kdf && Argon2Iterations >= Argon2dIterationsMin && Argon2Memory >= (Argon2dMemoryMin * 1024 * 1024) && Argon2Parallelism >= Argon2dParallelismMin)
             {
                 metStandard = true;
                 Cancel = false;
@@ -139,19 +177,22 @@ namespace KeePassEnforcedConfigExtender
                 Cancel = true;
             }
 
+            /*
             MessageService.ShowInfo("Show info of file BEFORE saving: " + "\n" +
                 "Cipher: " + sourceDb.KdfParameters.Count + "\n" +
                 "KdfUuid: " + sourceDb.KdfParameters.KdfUuid + "\n" +
                 "KdfType: " + kdf.GetType() + "\n\n" +
-                "---Argon Info---" + "\n" +
-                "ArgonIterationsNum: " + Argon2Iterations + "\n" +
-                "ArgonMemoryNum: " + Argon2Memory + "\n" +
-                "ArgonParallelismNum: " + Argon2Parallelism + "\n\n" +
-                "---AES Info---" + "\n" +
-                "AesRoundsNum: " + AesRounds + "\n\n" +
+                "---Current Argon Info---" + "\n" +
+                "ArgonIterationsCurrent: " + Argon2Iterations + "\n" +
+                "ArgonMemoryCurrent: " + Argon2Memory + "\n" +
+                "ArgonParallelismCurrent: " + Argon2Parallelism + "\n\n" +
+                "---Minimum Argon Info---" + "\n" +
+                "ArgonIterationsMin: " + Argon2dIterationsMin + "\n" +
+                "ArgonMemoryMin: " + (Argon2dMemoryMin * 1024 * 1024) + "\n" +
+                "ArgonParallelismMin: " + Argon2dParallelismMin + "\n\n" +
                 "Standard Met?: " + metStandard + "\n" +
                 "Cancel?: " + Cancel + "\n"
-                ) ;
+                ) ;*/
 
             return metStandard;
 		}
@@ -159,12 +200,12 @@ namespace KeePassEnforcedConfigExtender
 		private void OnFileSaved(object sender, FileSavedEventArgs e)
 		{
 
-
+            /**
             PwDatabase sourceDb = e.Database;
 
             MessageService.ShowInfo("SAVED");
 
-            /**
+
 
             MessageService.ShowInfo("Show info of file BEFORE: " + "\n" +
 			    "Cipher: " + e.Database.KdfParameters.Count + "\n" +
