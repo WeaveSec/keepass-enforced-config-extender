@@ -57,7 +57,7 @@ namespace KeePassEnforcedConfigExtender
 
 		private void OnFileSaving(object sender, FileSavingEventArgs e)
 		{
-            PwDatabase sourceDb = e.Database;
+      PwDatabase sourceDb = e.Database;
 
 			bool standardMet = VerifyStandard(sourceDb);
 
@@ -89,8 +89,6 @@ namespace KeePassEnforcedConfigExtender
                     e.Cancel = true;
                 }
             }
-
-
         }
 
 		private bool VerifyStandard(PwDatabase sourceDb)
