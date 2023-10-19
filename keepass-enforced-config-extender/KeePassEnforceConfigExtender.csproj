@@ -48,6 +48,7 @@
       <HintPath>references\KeePass.exe</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -55,10 +56,21 @@
   <ItemGroup>
     <Compile Include="KeePassEnforcedConfigExtenderExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Warn_Window.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Warn_Window.Designer.cs">
+      <DependentUpon>Warn_Window.cs</DependentUpon>
+    </Compile>
     <Compile Include="XmlReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="config.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Warn_Window.resx">
+      <DependentUpon>Warn_Window.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
