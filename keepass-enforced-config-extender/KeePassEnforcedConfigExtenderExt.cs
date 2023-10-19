@@ -31,9 +31,6 @@ namespace KeePassEnforcedConfigExtender
 			// the current database
 			m_host.MainWindow.FileSaved += this.OnFileSaved;
 
-			// Get notification of information when file is created
-            m_host.MainWindow.FileCreated += this.OnFileCreated;
-
             // Get notification of information when file is created
             m_host.MainWindow.FileSaving += this.OnFileSaving;
 
@@ -49,33 +46,32 @@ namespace KeePassEnforcedConfigExtender
 		{
 			// Remove event handler (important!)
 			m_host.MainWindow.FileSaved -= this.OnFileSaved;
-
-            m_host.MainWindow.FileCreated -= this.OnFileCreated;
-
             m_host.MainWindow.FileSaving -= this.OnFileSaving;
         }
 
 		private void OnFileSaving(object sender, FileSavingEventArgs e)
 		{
-      PwDatabase sourceDb = e.Database;
+            
+            PwDatabase sourceDb = e.Database;
 
 			bool standardMet = VerifyStandard(sourceDb);
 
 
-            // If KDF standard not met, promt user warning
+            // If KDF standard not met, prompts user response
             if (standardMet == false)
             {
+
+                // Ask user to continue saving or to cancel
                 var warn_form = new Warn_Window();
 
                 warn_form.ShowDialog();
-
                 warn_form.Dispose();
 
-                // Gets button response from user
                 bool ContinueSave = warn_form.ContinueSave;
 
                 MessageService.ShowInfo("continueSave: " + ContinueSave);
 
+                // If user wants to save, apply minimum Kdf parameters
                 if (ContinueSave == true)
                 {
                     sourceDb.KdfParameters = (new Argon2Kdf()).GetDefaultParameters();
@@ -84,6 +80,7 @@ namespace KeePassEnforcedConfigExtender
                     sourceDb.KdfParameters.SetUInt64(Argon2Kdf.ParamMemory, 20 * 1024 * 1024);
                     sourceDb.KdfParameters.SetUInt32(Argon2Kdf.ParamParallelism, 1);
                 }
+                // If user does not want to save, set Cancel signal
                 else
                 {
                     e.Cancel = true;
@@ -94,48 +91,44 @@ namespace KeePassEnforcedConfigExtender
 		private bool VerifyStandard(PwDatabase sourceDb)
 		{
             bool metStandard = false;
+            bool Cancel;
+
+            // Argon2 variable names
+            string ArgonParamParallelism = "P"; // UInt32
+            string ArgonParamMemory = "M"; // UInt64
+            string ArgonParamIterations = "I";
+            string AesParamRounds = "R"; // Ulong
+
+            // Argon2 default parameters
+            ulong DefaultIterations = 2;
+            ulong DefaultMemory = 64 * 1024 * 1024; // 64 MB
+            uint DefaultParallelism = 2;
+
+            // AES default parameters
+            ulong DefaultKeyEncryptionRounds = 60000;
+
+
 
             KdfEngine kdf = KdfPool.Get(sourceDb.KdfParameters.KdfUuid);
 
-
-
-
             /**
              * List Kdf options in Pool
-            foreach (KdfEngine kdf_this in KdfPool.Engines)
+            foreach (KdfEngine kdf in KdfPool.Engines)
             {
                 MessageService.ShowInfo("kdfName: " + "\n" + kdf_this.Name);
             };
 			*/
 
 
-            string ArgonParamParallelism = "P"; // UInt32
-            string ArgonParamMemory = "M"; // UInt64
-            string AesParamRounds = "R"; // Ulong
-            string ArgonParamIterations = "I";
+            // Get Database KDF values
+            ulong AesRounds = sourceDb.KdfParameters.GetUInt64(AesParamRounds, DefaultKeyEncryptionRounds);
 
-            ulong DefaultKeyEncryptionRounds = 0;
-            ulong testRoundsNum = sourceDb.KdfParameters.GetUInt64(AesParamRounds, DefaultKeyEncryptionRounds);
+            ulong Argon2Iterations = sourceDb.KdfParameters.GetUInt64(ArgonParamIterations, DefaultIterations);
+            ulong Argon2Memory = sourceDb.KdfParameters.GetUInt64(ArgonParamMemory, DefaultMemory);
+            uint Argon2Parallelism = sourceDb.KdfParameters.GetUInt32(ArgonParamParallelism, DefaultParallelism);
 
-
-            ulong DefaultIterations = 0;
-            ulong testIterationsNum = sourceDb.KdfParameters.GetUInt64(ArgonParamIterations, DefaultIterations);
-
-
-            ulong DefaultMemory = 0; //64 * 1024 * 1024; // 64 MB
-
-            uint DefaultParallelism = 0; //2;
-
-
-            bool Cancel = false;
-
-
-
-            ulong testMemoryNum = sourceDb.KdfParameters.GetUInt64(ArgonParamMemory, DefaultMemory);
-            uint testParallelismNum = sourceDb.KdfParameters.GetUInt32(ArgonParamParallelism, DefaultParallelism);
-
-
-            if (kdf is Argon2Kdf && testIterationsNum >= 15 && testMemoryNum >= 20971520 && testParallelismNum >= 1)
+            // Compare if Database Kdf Settings meets minimum standard
+            if (kdf is Argon2Kdf && Argon2Iterations >= 15 && Argon2Memory >= 20971520 && Argon2Parallelism >= 1)
             {
                 metStandard = true;
                 Cancel = false;
@@ -146,17 +139,16 @@ namespace KeePassEnforcedConfigExtender
                 Cancel = true;
             }
 
-            MessageService.ShowInfo("Show info of file SAVING: " + "\n" +
+            MessageService.ShowInfo("Show info of file BEFORE saving: " + "\n" +
                 "Cipher: " + sourceDb.KdfParameters.Count + "\n" +
                 "KdfUuid: " + sourceDb.KdfParameters.KdfUuid + "\n" +
-                //              "warn_form.text: " + userInput + "\n" +
                 "KdfType: " + kdf.GetType() + "\n\n" +
                 "---Argon Info---" + "\n" +
-                "ArgonIterationsNum: " + testIterationsNum + "\n" +
-                "ArgonMemoryNum: " + testMemoryNum + "\n" +
-                "ArgonParallelismNum: " + testParallelismNum + "\n\n" +
+                "ArgonIterationsNum: " + Argon2Iterations + "\n" +
+                "ArgonMemoryNum: " + Argon2Memory + "\n" +
+                "ArgonParallelismNum: " + Argon2Parallelism + "\n\n" +
                 "---AES Info---" + "\n" +
-                "AesRoundsNum: " + testRoundsNum + "\n\n" +
+                "AesRoundsNum: " + AesRounds + "\n\n" +
                 "Standard Met?: " + metStandard + "\n" +
                 "Cancel?: " + Cancel + "\n"
                 ) ;
@@ -203,15 +195,5 @@ namespace KeePassEnforcedConfigExtender
 			*/
 
         }
-
-		private void OnFileCreated(object sender, FileCreatedEventArgs e)
-		{
-
-			// KdfParameters p = e.Database.KdfParameters;
-
-			//MessageService.ShowInfo("Compression: " + e.Database.Compression + "\n" +
-			//	"Cipher: " + e.Database.KdfParameters.Count);
-
-		}
 	}
 }
