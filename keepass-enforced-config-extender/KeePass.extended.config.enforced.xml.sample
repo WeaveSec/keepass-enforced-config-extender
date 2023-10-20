@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<KdfAlgorithmMinimum>
+		<KdfFunction>Argon2d</KdfFunction>
+		<Argon2dIterations>15</Argon2dIterations>
+		<Argon2dMemory>20</Argon2dMemory>
+		<Argon2dParallelism>1</Argon2dParallelism>
+	</KdfAlgorithmMinimum>
+</Configuration>
