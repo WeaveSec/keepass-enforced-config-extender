@@ -62,7 +62,6 @@
     <Compile Include="Warn_Window.Designer.cs">
       <DependentUpon>Warn_Window.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Warn_Window.resx">
