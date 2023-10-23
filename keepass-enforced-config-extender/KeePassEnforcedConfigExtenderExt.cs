@@ -32,6 +32,11 @@ namespace KeePassEnforcedConfigExtender
 
                 return xmlDocument;
             }
+            catch (System.IO.FileNotFoundException)
+            {
+                MessageService.ShowInfo("Cannot find enhanced enforced config file. Verify the KeePass.extended.config.enforced.xml file exists");
+                return null;
+            }
             catch (Exception e)
             {
                 MessageService.ShowInfo("ERROR: " + e);
@@ -107,7 +112,7 @@ namespace KeePassEnforcedConfigExtender
 
                 bool ContinueSave = warn_form.ContinueSave;
 
-                MessageService.ShowInfo("continueSave: " + ContinueSave);
+                //MessageService.ShowInfo("continueSave: " + ContinueSave);
 
                 // If user wants to save, apply minimum Kdf parameters
                 if (ContinueSave == true)

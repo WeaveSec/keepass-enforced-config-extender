@@ -61,7 +61,7 @@
             this.lbl_warn_text1.Name = "lbl_warn_text1";
             this.lbl_warn_text1.Size = new System.Drawing.Size(337, 32);
             this.lbl_warn_text1.TabIndex = 4;
-            this.lbl_warn_text1.Text = "The database does not meet the minimum encyrption standards. Keepass will attempt" +
+            this.lbl_warn_text1.Text = "The database does not meet the minimum encryption standards. Keepass will attempt" +
     " to upgrade it.";
             this.lbl_warn_text1.Click += new System.EventHandler(this.lbl_warn_text_Click);
             // 
