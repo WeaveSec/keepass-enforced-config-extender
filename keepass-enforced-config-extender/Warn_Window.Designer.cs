@@ -41,7 +41,7 @@
             this.btn_cancel.Name = "btn_cancel";
             this.btn_cancel.Size = new System.Drawing.Size(100, 40);
             this.btn_cancel.TabIndex = 1;
-            this.btn_cancel.Text = "No";
+            this.btn_cancel.Text = "Cancel";
             this.btn_cancel.UseVisualStyleBackColor = true;
             this.btn_cancel.Click += new System.EventHandler(this.btn_cancel_Click);
             // 
@@ -51,7 +51,7 @@
             this.btn_continue.Name = "btn_continue";
             this.btn_continue.Size = new System.Drawing.Size(100, 40);
             this.btn_continue.TabIndex = 3;
-            this.btn_continue.Text = "Yes";
+            this.btn_continue.Text = "Upgrade";
             this.btn_continue.UseVisualStyleBackColor = true;
             this.btn_continue.Click += new System.EventHandler(this.btn_continue_Click);
             // 
@@ -71,7 +71,8 @@
             this.lbl_test2.Name = "lbl_test2";
             this.lbl_test2.Size = new System.Drawing.Size(337, 32);
             this.lbl_test2.TabIndex = 5;
-            this.lbl_test2.Text = "We recommend to backup and save a copy before attempting the upgrade.";
+            this.lbl_test2.Text = "Before upgrading, backup your database by creating a copy of your Keepass (.kdbx)" +
+    " file.";
             // 
             // lbl_text3
             // 
