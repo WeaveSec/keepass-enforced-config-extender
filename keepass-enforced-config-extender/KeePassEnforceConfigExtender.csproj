@@ -65,9 +65,6 @@
     <Compile Include="XmlReader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Warn_Window.resx">
       <DependentUpon>Warn_Window.cs</DependentUpon>
     </EmbeddedResource>
