@@ -32,5 +32,15 @@ namespace KeePassEnforcedConfigExtender
         {
 
         }
+
+        private void Warn_Window_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lbl_test2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
