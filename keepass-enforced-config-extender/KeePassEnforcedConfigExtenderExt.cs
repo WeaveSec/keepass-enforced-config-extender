@@ -81,11 +81,53 @@ namespace KeePassEnforcedConfigExtender
             ulong configArgon2dIterationsMin;
             ulong configArgon2dMemoryMin;
             uint configArgon2dParallelismMin;
+            string configKdfFunction = "";
 
-            string configKdfFunction = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/KdfFunction").InnerText;
-            ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dIterations").InnerText, out configArgon2dIterationsMin);
-            ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dMemory").InnerText, out configArgon2dMemoryMin);
-            uint.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dParallelism").InnerText, out configArgon2dParallelismMin);
+
+            XmlNode configKdfFunctionNode = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/KdfFunction");
+            if (configKdfFunctionNode == null)
+            {
+                configKdfFunction = "Argon2d";
+            }
+            else
+            {
+                configKdfFunction = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/KdfFunction").InnerText;
+            }
+
+
+            XmlNode configArgon2dIterationsMinNode = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dIterations");
+            if (configArgon2dIterationsMinNode == null)
+            {
+                configArgon2dIterationsMin = 15;
+            }
+            else
+            {
+                ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dIterations").InnerText, out configArgon2dIterationsMin);
+                ;
+            }
+
+            XmlNode configArgon2dMemoryMinNode = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dMemory");
+            if (configArgon2dMemoryMinNode == null)
+            {
+                configArgon2dMemoryMin = 20;
+            }
+            else
+            {
+                ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dMemory").InnerText, out configArgon2dMemoryMin);
+            }
+
+            XmlNode configArgon2dParallelismNode = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dParallelism");
+            if (configArgon2dParallelismNode == null)
+            {
+                configArgon2dParallelismMin = 20;
+            }
+            else
+            {
+                uint.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dParallelism").InnerText, out configArgon2dParallelismMin);
+            }
+
+
+            
 
 
             // Set default values if config values less 0 or less
