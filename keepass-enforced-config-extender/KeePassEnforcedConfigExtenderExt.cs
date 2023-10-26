@@ -87,12 +87,22 @@ namespace KeePassEnforcedConfigExtender
             ulong.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dMemory").InnerText, out configArgon2dMemoryMin);
             uint.TryParse(xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dParallelism").InnerText, out configArgon2dParallelismMin);
 
-            if (configKdfFunction != "Argon2d" || configArgon2dIterationsMin == 0 || configArgon2dMemoryMin == 0 || configArgon2dParallelismMin == 0)
+
+            // Set default values if config values less 0 or less
+            if (configKdfFunction != "Argon2d")
             {
-                // Kdf data could not be read, using defaults
                 configKdfFunction = "Argon2d";
+            }
+            if (configArgon2dIterationsMin <= 0)
+            {
                 configArgon2dIterationsMin = 15;
+            }
+            if (configArgon2dMemoryMin <= 0)
+            {
                 configArgon2dMemoryMin = 20;
+            }
+            if (configArgon2dParallelismMin <= 0)
+            {
                 configArgon2dParallelismMin = 1;
             }
 
