@@ -28,8 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Warn_Window));
             this.btn_cancel = new System.Windows.Forms.Button();
-            this.btn_continue = new System.Windows.Forms.Button();
+            this.btn_upgrade = new System.Windows.Forms.Button();
             this.lbl_warn_text1 = new System.Windows.Forms.Label();
             this.lbl_test2 = new System.Windows.Forms.Label();
             this.lbl_text3 = new System.Windows.Forms.Label();
@@ -45,15 +46,15 @@
             this.btn_cancel.UseVisualStyleBackColor = true;
             this.btn_cancel.Click += new System.EventHandler(this.btn_cancel_Click);
             // 
-            // btn_continue
+            // btn_upgrade
             // 
-            this.btn_continue.Location = new System.Drawing.Point(66, 153);
-            this.btn_continue.Name = "btn_continue";
-            this.btn_continue.Size = new System.Drawing.Size(100, 40);
-            this.btn_continue.TabIndex = 3;
-            this.btn_continue.Text = "Upgrade";
-            this.btn_continue.UseVisualStyleBackColor = true;
-            this.btn_continue.Click += new System.EventHandler(this.btn_continue_Click);
+            this.btn_upgrade.Location = new System.Drawing.Point(66, 153);
+            this.btn_upgrade.Name = "btn_upgrade";
+            this.btn_upgrade.Size = new System.Drawing.Size(100, 40);
+            this.btn_upgrade.TabIndex = 3;
+            this.btn_upgrade.Text = "Upgrade";
+            this.btn_upgrade.UseVisualStyleBackColor = true;
+            this.btn_upgrade.Click += new System.EventHandler(this.btn_continue_Click);
             // 
             // lbl_warn_text1
             // 
@@ -67,12 +68,13 @@
             // 
             // lbl_test2
             // 
-            this.lbl_test2.Location = new System.Drawing.Point(27, 66);
+            this.lbl_test2.Location = new System.Drawing.Point(27, 70);
             this.lbl_test2.Name = "lbl_test2";
             this.lbl_test2.Size = new System.Drawing.Size(337, 32);
             this.lbl_test2.TabIndex = 5;
             this.lbl_test2.Text = "Before upgrading, backup your database by creating a copy of your Keepass (.kdbx)" +
     " file.";
+            this.lbl_test2.Click += new System.EventHandler(this.lbl_test2_Click);
             // 
             // lbl_text3
             // 
@@ -86,21 +88,25 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(395, 205);
             this.Controls.Add(this.lbl_text3);
             this.Controls.Add(this.lbl_test2);
             this.Controls.Add(this.lbl_warn_text1);
-            this.Controls.Add(this.btn_continue);
+            this.Controls.Add(this.btn_upgrade);
             this.Controls.Add(this.btn_cancel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Warn_Window";
-            this.Text = "Warn_Window";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Warning";
+            this.Load += new System.EventHandler(this.Warn_Window_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private System.Windows.Forms.Button btn_cancel;
-        private System.Windows.Forms.Button btn_continue;
+        private System.Windows.Forms.Button btn_upgrade;
         private System.Windows.Forms.Label lbl_warn_text1;
         private System.Windows.Forms.Label lbl_test2;
         private System.Windows.Forms.Label lbl_text3;

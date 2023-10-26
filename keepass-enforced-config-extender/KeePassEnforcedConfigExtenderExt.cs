@@ -159,6 +159,10 @@ namespace KeePassEnforcedConfigExtender
                 // Ask user to continue saving or to cancel
                 var warn_form = new Warn_Window();
 
+                warn_form.FormBorderStyle = FormBorderStyle.FixedSingle;
+                warn_form.MaximizeBox = false;
+                warn_form.MinimizeBox = false;
+
                 warn_form.ShowDialog();
                 warn_form.Dispose();
 
