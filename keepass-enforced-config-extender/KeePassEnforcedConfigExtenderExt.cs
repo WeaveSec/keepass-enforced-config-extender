@@ -119,7 +119,7 @@ namespace KeePassEnforcedConfigExtender
             XmlNode configArgon2dParallelismNode = xmlDocument.SelectSingleNode("/Configuration/KdfAlgorithmMinimum/Argon2dParallelism");
             if (configArgon2dParallelismNode == null)
             {
-                configArgon2dParallelismMin = 20;
+                configArgon2dParallelismMin = 1;
             }
             else
             {
